@@ -1,0 +1,109 @@
+<style>
+	.row{
+		display: flexbox;
+	}
+	.card .card-body{
+		font-size: large;
+		text-align: center; 
+		background-color: #98ba7d;
+	}
+	.card .row{
+		margin: 1rem 0 0 1rem;
+	}
+</style>
+
+<div class="container-fluid">
+
+	<div class="row">
+		<div class="col-lg-12">
+			
+		</div>
+	</div>
+
+	<div class="row mt-3 ml-3 mr-3">
+		<div class="col-lg-12">
+			<div class="card">
+				<div class="card-body">
+				<?php echo "Welcome back, ".$_SESSION['login_name']." !"  ?>					
+				</div>
+				<div class="row">
+				    <div class="alert alert-success col-md-3 ml-4">
+					    <p><b><large>Daily Sales(Php)</large></b></p>
+				    <hr>
+					    <p class="text-right"><b><large><?php 
+					    include 'db_connect.php';
+					    $sales = $conn->query("SELECT SUM(total_amount) as amount FROM sales_list where date(date_updated)= '".date('Y-m-d')."'");
+					    echo $sales->num_rows > 0 ? number_format($sales->fetch_array()['amount'],2) : "0.00";
+
+					    ?></large></b></p>
+				    </div>
+				    <div class="alert alert-primary col-md-3 ml-4">
+					    <p><b><large>Total Categories</large></b></p>
+					    <hr>
+					    <p class="text-right"><b><large><?php
+					    include 'db_connect.php';
+					    $category = $conn->query("SELECT * FROM category_list");
+					    echo $category->num_rows;
+					    ?></large></b></p>
+				    </div>
+				    <div class="alert alert-dark col-md-3 ml-4">
+					    <p><b><large>Total Customer</large></b></p>
+					    <hr>
+					    <p class="text-right"><b><large><?php
+					    include 'db_connect.php';
+					    $customer = $conn->query("SELECT * FROM customer_list");
+					    echo $customer->num_rows;
+					    ?></large></b></p>
+				    </div>
+				    <div class="alert alert-warning col-md-3 ml-4">
+					    <p><b><large>Total Products</large></b></p>
+					    <hr>
+					    <p class="text-right"><b><large><?php
+					    include 'db_connect.php';
+					    $product = $conn->query("SELECT * FROM product_list");
+					    echo $product->num_rows;
+					    ?></large></b></p>
+				    </div>
+				    <div class="alert alert-danger col-md-3 ml-4">
+					    <p><b><large>Total Supplier</large></b></p>
+					    <hr>
+					    <p class="text-right"><b><large><?php
+					    include 'db_connect.php';
+					    $supplier = $conn->query("SELECT * FROM supplier_list");
+					    echo $supplier->num_rows;
+					    ?></large></b></p>
+				    </div>
+				    <div class="alert alert-info col-md-3 ml-4">
+					    <p><b><large>Total Stocks Available</large></b></p>
+					    <hr>
+					    <p class="text-right"><b><large><?php
+					    include 'db_connect.php';
+					    $i = 1;
+					    $product = $conn->query("SELECT * FROM product_list r order by name asc");
+					    $row=$product->fetch_assoc();
+					    $inn = $conn->query("SELECT sum(qty) as inn FROM inventory where type = 1 and product_id = ".$row['id']);
+					    $inn = $inn && $inn->num_rows > 0 ? $inn->fetch_array()['inn'] : 0;
+					    $out = $conn->query("SELECT sum(qty) as `out` FROM inventory where type = 2 and product_id = ".$row['id']);
+					    $out = $out && $out->num_rows > 0 ? $out->fetch_array()['out'] : 0;
+					    $available = $inn - $out;
+					    $result = 0;
+					    $x = 0;
+					    $total = array($available);
+					    while($x < count($total)){
+						    $result += $total[$x];
+						    $x++;
+						    echo $result;
+						}
+					    ?></large></b></p>
+				    </div>
+				</div>
+			</div>
+			
+		</div>
+		</div>
+	</div>
+
+</div>
+<script>
+	
+</script>

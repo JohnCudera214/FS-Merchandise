@@ -1,0 +1,134 @@
+<head>
+    <title>Feel Store Merchandise</title>
+</head>
+<?php include('./header.php');?>
+<?php include('./db_connect.php');?>
+
+<?php 
+include('db_connect.php');
+if(isset($_GET['id'])){
+$account = $conn->query("SELECT * FROM admininfo where id =".$_GET['id']);
+foreach($account->fetch_array() as $k =>$v){
+    $meta[$k] = $v;
+}
+}
+?>
+<?php
+if(isset($_SESSION['login_id']))
+header("location:index.php?page=dashboard");?>
+
+<div class="toast" id="alert_toast" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast-body text-white"></div>
+</div>
+<body style="background-color: #e6e6e6; position: fixed;">
+<div class="d-xl-flex p-2 justify-content-center" style="margin-top: 1.5rem;">
+    <div class="col-md-4">
+        <form action="" id="account-enter">
+            <div class="card">
+                <div class="card-header" style="background-color: #008060;">
+                    <h5><center style="color: white;"><b>Forgot Account</b></center></h5>
+                </div>
+                <div class="card-body">
+				<div class="form-group">
+                    <label for="full_name">What is your full name?</label>
+                    <input type="text" id="fullname" name="fullname" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="birth_place">What is your birthplace?</label>
+                    <input type="text" id="birthplace" name="birthplace" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="zip_code">What is the zipcode?</label>
+                    <input type="text" id="zipcode" name="zipcode" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="birth_year">When is your birthday?</label>
+                    <input type="text" id="birthday" name="birthday" class="form-control">
+                </div>
+                </div>
+                <div class="card-footer">
+                    <button class="btn btn-primary" id="enter">Enter</button>
+                    <button class="btn btn-secondary" id="cancel">Cancel</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+<script>
+    $(document).ready(function() {
+        $("#cancel").click(function() {
+            window.location.href = "login.php";
+         });
+    });
+    // check if it is all completed fill out
+    $(document).ready(function() {
+        $('#enter').click(function(){
+        var fullname = $('#fullname').val(),
+            birthplace = $('#birthplace').val();
+            zipcode = $('#zipcode').val();
+            birthday = $('#birthday').val();
+            if(fullname == '' || birthplace == '' || zipcode == '' || birthday == ''){
+                $('#account-enter').prepend('<div class="alert alert-warning"><button type="button" class="close" data-dismiss="alert">&times;</button>You must fill the information completely!</div>')
+                $('#account-enter button[type="button"]').removeAttr('disabled').html();
+                // alert_toast("Enter your username and password first.",'warning');
+                return false;
+            }
+            $('#account-enter form').submit();
+        });
+    });
+
+    //log in kunohay
+    $('#account-enter').submit(function(e){
+		e.preventDefault()
+		$('#account-center button[type="button"]').attr('disabled',true).html('Logging in...');
+		if($(this).find('.alert-danger').length > 0 )
+			$(this).find('.alert-danger').remove();
+		$.ajax({
+			url:'ajax.php?action=another_login',
+			method:'POST',
+			data:$(this).serialize(),
+			error:err=>{
+				console.log(err)
+		$('#account-center button[type="button"]').removeAttr('disabled').html();
+
+			},
+			success:function(resp){
+				if(resp == 1){
+					window.location.href ='index.php?page=dashboard';
+				}else{
+					$('#account-center').prepend('<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button>Username or password is incorrect.</div>')
+					$('#account-center button[type="button"]').removeAttr('disabled').html();
+					// alert_toast("Username and password is incorrect!",'danger')
+					// setTimeout(function(){
+					// 	location.reload()
+					// },1500)
+				}
+			}
+		})
+	})
+
+
+
+
+
+
+	//alert toast message
+// 	window.alert_toast= function($msg = 'TEST',$bg = 'success'){
+//       $('#alert_toast').removeClass('bg-success')
+//       $('#alert_toast').removeClass('bg-danger')
+//       $('#alert_toast').removeClass('bg-info')
+//       $('#alert_toast').removeClass('bg-warning')
+
+//     if($bg == 'success')
+//       $('#alert_toast').addClass('bg-success')
+//     if($bg == 'danger')
+//       $('#alert_toast').addClass('bg-danger')
+//     if($bg == 'info')
+//       $('#alert_toast').addClass('bg-info')
+//     if($bg == 'warning')
+//       $('#alert_toast').addClass('bg-warning')
+//     $('#alert_toast .toast-body').html($msg)
+//     $('#alert_toast').toast({delay:3000}).toast('show');
+//   }
+</script>
